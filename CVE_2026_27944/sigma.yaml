@@ -1,0 +1,33 @@
+title: CVE-2026-27944 Backup Download via API
+id: 15e0f0e8-ac97-47f1-82c9-d847b0a8d436
+status: experimental
+description: Detects access to /api/backup endpoint including encoded variants
+author: Yuri Zakharchuk
+date: 2026/03/22
+
+logsource:
+  category: webserver
+  product: nginx
+
+detection:
+  selection_status:
+    msgid: "200"
+
+  selection_path:
+    request|re: '(?i).*/(api|%61%70%69)(\.\/|\/)(backup|%62%61%63%6b%75%70).*'
+
+  condition: selection_status and selection_path
+
+fields:
+  - src_ip
+  - request
+  - status
+
+falsepositives:
+  - Legitimate backup operations
+
+level: high
+
+tags:
+  - attack.credential_access
+  - cve.2026.27944

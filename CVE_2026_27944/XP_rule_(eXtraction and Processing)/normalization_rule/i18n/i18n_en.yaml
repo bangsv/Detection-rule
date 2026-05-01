@@ -1,0 +1,4 @@
+Description: 'Replace these words with a description of normalization'
+EventDescriptions:
+  - LocalizationId: 'cve_2026_27944_nginx_ui_1'
+    EventDescription: 'Replace these words with a description. Example: The user {subject.account.name} started the {object.process.name} process on host {event_src.host}'

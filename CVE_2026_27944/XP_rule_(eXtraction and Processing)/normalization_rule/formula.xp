@@ -1,0 +1,31 @@
+# 2026-03-22 19:47:58.865 | [GIN] 2026/03/22 - 16:47:58 | 200 | 7.257288ms | 172.22.0.1 | GET "/api/backup"
+
+TEXT = '{$data=STRING} {$time=STRING} | [{datafield1=WORD}] {$data_utc=STRING} - {$tme_utc=STRING} | {msgid=NUMBER} | {STRING} | {src.ip=IPV4} | {$method=STRING} {object.process.path=STRING}'
+
+subject = "account"
+action = "request"
+object = "application"
+
+if $code == 200 then
+    status = "success"
+    importance = "high"
+else 
+    status = "failure"
+    importance = "info"
+endif
+
+object.process.path = replace(object.process.path,'','"')
+
+$data_time = [$data,$time]
+datafield2 = join($data_time,"T")
+
+time = datetime(datafield2)
+
+category.generic = "Application"
+category.low = "detection"
+
+event_src.vendor = "nginx"
+event_src.title = "nginx_ui"
+event_src.category = "Web server"
+
+id = "CVE-2026-27944"

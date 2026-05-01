@@ -1,0 +1,54 @@
+event Succes_backup:
+    key:
+        src.ip
+    filter {
+        msgid == "200" 
+        and ( regex(lower(object.process.path), ".*\/(api|%61%70%69)*(\.\/|\/)(backup|%62%61%63%6b%75%).*", 0) != null)
+        and event_src.vendor == "nginx"
+    }
+
+rule cve_2026_27944: Succes_backup [1]
+    on Succes_backup{
+
+            $object = object
+            $action = action
+
+            $src.host = src.ip
+            $src.ip = src.ip
+            $object.process.path = object.process.path
+
+            $datafield1 = datafield1 
+            $datafield2 = datafield2
+
+            $msgid = msgid
+            $time = time
+        
+            $event_src.vendor = event_src.vendor
+            $event_src.title = event_src.title
+            $event_src.category = event_src.category
+
+            $category.generic = category.generic
+            
+            
+            $id = id
+    }
+
+    emit {
+
+        $correlation_type = "incident"
+        $object = "client"
+        $action = "login"
+        $status = "success"
+        $importance = "high"
+
+        $category.generic = "Attack"
+        $category.high = "Credential Access"
+
+        $incident.description = "Загрузка резервной копии системы через конечную точку /api/backup"
+    }
+
+
+
+
+
+

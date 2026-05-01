@@ -1,0 +1,424 @@
+──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/api/backup -o backup.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-164758.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 16:47:58 GMT
+< Pragma: public
+< Request-Id: 4806cba0-9297-4c79-a5c6-d797856a417e
+< X-Backup-Security: o9x2Qg1TvsrjGEGwxnbDbLwRKsmm51RLkAaSr3lfHEU=:R5t5LT/eH5Nq9Lbw8OUIvg==
+< Date: Sun, 22 Mar 2026 16:47:58 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 597k 0 --:--:-- --:--:-- --:--:-- 625k
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/API/backup -o backup1.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /API/backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: ec8a46f0-9369-4fc4-afa2-96c9e4c1d9c1
+< Date: Sun, 22 Mar 2026 16:48:11 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 2526 0 --:--:-- --:--:-- --:--:-- 2555
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/api/Backup -o backup2.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/Backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: de83396f-1772-4865-9874-fae1c17b57e8
+< Date: Sun, 22 Mar 2026 16:48:19 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 2435 0 --:--:-- --:--:-- --:--:-- 2555
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/aPi/bAcKuP -o backup3.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /aPi/bAcKuP HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: a3e0925d-157a-4fb5-8e85-b5e1b7807df2
+< Date: Sun, 22 Mar 2026 16:48:23 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 1140 0 --:--:-- --:--:-- --:--:-- 1150
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/%61%70%69/%62%61%63%6b%75%70 -o backup4.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /%61%70%69/%62%61%63%6b%75%70 HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-164827.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 16:48:27 GMT
+< Pragma: public
+< Request-Id: fb2ee672-5e32-4c0a-8386-aa04577217be
+< X-Backup-Security: h6AL4UMLpTTYdy25+KGL9jc6YocZDSJx5OJaBcrVIIg=:8iMUjaybSfpz/UkC5V0HYA==
+< Date: Sun, 22 Mar 2026 16:48:27 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 217k 0 --:--:-- --:--:-- --:--:-- 220k
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/api//backup -o backup5.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api//backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: 15d1ee90-cbf6-41a0-be66-d45414a8db97
+< Date: Sun, 22 Mar 2026 16:48:39 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 3046 0 --:--:-- --:--:-- --:--:-- 3285
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/api/./backup -o backup6.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-164842.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 16:48:42 GMT
+< Pragma: public
+< Request-Id: 748e381c-3dc6-4162-9c6c-bb3c14368b39
+< X-Backup-Security: 1V6iO7Yl1ib2erQl9AQD+Sz8PWAkvdSKaaDG4085+Q0=:LfaorTxHa5tN0ZH8QRjp8w==
+< Date: Sun, 22 Mar 2026 16:48:42 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 204k 0 --:--:-- --:--:-- --:--:-- 208k
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v http://192.168.56.1:9000/api/backup/ -o backup7.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup/ HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 301 Moved Permanently
+< Content-Type: text/html; charset=utf-8
+< Location: /api/backup
+< Date: Sun, 22 Mar 2026 16:48:50 GMT
+< Content-Length: 46
+<
+{ [46 bytes data]
+100 46 100 46 0 0 4981 0 --:--:-- --:--:-- --:--:-- 5111
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/api/backup?x=1" -o backup-q1.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup?x=1 HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-164856.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 16:48:56 GMT
+< Pragma: public
+< Request-Id: 8f84eaf6-52a6-4797-9aff-b8021642de96
+< X-Backup-Security: 5RMS/ftcx2AOgebPsxAUqSsEI0Os81PQ0jt8MRjEoAc=:uTFHl2oOJWClZKNd3Q9zhA==
+< Date: Sun, 22 Mar 2026 16:48:56 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 242k 0 --:--:-- --:--:-- --:--:-- 244k
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/api/backup?t=backup" -o backup-q2.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup?t=backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-164900.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 16:49:00 GMT
+< Pragma: public
+< Request-Id: 23aef15a-5ce9-4275-8735-f51290c1aa0b
+< X-Backup-Security: Q7CyNj0elZQtKVCyS7jbMYcxFUJblivrGP8c8a7WGpU=:nWe2WLXovRzCqbiZQn2QlQ==
+< Date: Sun, 22 Mar 2026 16:49:00 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 254k 0 --:--:-- --:--:-- --:--:-- 255k
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/api/backup?format=zip" -o backup-q3.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup?format=zip HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-164905.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 16:49:05 GMT
+< Pragma: public
+< Request-Id: 32ac016d-8c3e-4f61-aa9f-ecb07b3bf836
+< X-Backup-Security: QK1VFE3WVsVz6sasMSyW+oJwYM5d20A47OTYEWW3c14=:Zb7cdQwI64HLjQlltFbq9w==
+< Date: Sun, 22 Mar 2026 16:49:05 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 222k 0 --:--:-- --:--:-- --:--:-- 225k
+* Connection #0 to host 192.168.56.1 left intact
+ 
+──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/%252f%61%70%69%252f%62%61%63%6b%75%70" -o double-enc.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /%252f%61%70%69%252f%62%61%63%6b%75%70 HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: d5c4f15f-9c5c-4fa9-88ad-bd287d804e23
+< Date: Sun, 22 Mar 2026 19:40:57 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 2650 0 --:--:-- --:--:-- --:--:-- 2875
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/api/＼backup" -o unicode-slash.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/%ef%bc%bcbackup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: 60c3278b-eb79-46d6-8ea9-5cd8cc7ebfd6
+< Date: Sun, 22 Mar 2026 19:40:59 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 1678 0 --:--:-- --:--:-- --:--:-- 1769
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/api/././backup" -o multi-dot.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Accept-Ranges: bytes
+< Cache-Control: must-revalidate
+< Content-Description: File Transfer
+< Content-Disposition: attachment; filename=backup-20260322-194115.zip
+< Content-Length: 11522
+< Content-Transfer-Encoding: binary
+< Content-Type: application/zip
+< Expires: 0
+< Last-Modified: Sun, 22 Mar 2026 19:41:15 GMT
+< Pragma: public
+< Request-Id: 2aae8f30-995e-41ed-a2ed-25a61c8bdc11
+< X-Backup-Security: QBvXVb23azSiebCijlNU1w/K2YMqBmS9tIiOOI9WwNY=:EeOnnOfT1WZtdNNEYU+Vmw==
+< Date: Sun, 22 Mar 2026 19:41:15 GMT
+<
+{ [11522 bytes data]
+100 11522 100 11522 0 0 411k 0 --:--:-- --:--:-- --:--:-- 416k
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v "http://192.168.56.1:9000/api/backup%20" -o space-at-end.enc
+  % Total % Received % Xferd Average Speed Time Time Time Current
+                                 Dload Upload Total Spent Left Speed
+  0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> GET /api/backup%20 HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+< Request-Id: 38474740-1cc9-46f2-8efa-643107f1331a
+< Date: Sun, 22 Mar 2026 19:41:27 GMT
+< Content-Length: 23
+<
+{ [23 bytes data]
+100 23 100 23 0 0 2818 0 --:--:-- --:--:-- --:--:-- 2875
+* Connection #0 to host 192.168.56.1 left intact
+                                                                                                                                                                                                                                           
+┌──(bang㉿kali)-[~/Desktop]
+└─$ curl -v -I http://192.168.56.1:9000/api/backup?x=1
+* Trying 192.168.56.1:9000...
+* Connected to 192.168.56.1 (192.168.56.1) port 9000
+* using HTTP/1.x
+> HEAD /api/backup?x=1 HTTP/1.1
+> Host: 192.168.56.1:9000
+> User-Agent: curl/8.13.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+HTTP/1.1 404 Not Found
+< Content-Type: application/json; charset=utf-8
+Content-Type: application/json; charset=utf-8
+< Request-Id: 3d53e5c7-3f8f-47ab-a99a-7b2e2cb5c303
+Request-Id: 3d53e5c7-3f8f-47ab-a99a-7b2e2cb5c303
+< Date: Sun, 22 Mar 2026 19:41:39 GMT
+Date: Sun, 22 Mar 2026 19:41:39 GMT
+< Content-Length: 23
+Content-Length: 23
+<
+* Connection #0 to host 192.168.56.1 left intact
+ 

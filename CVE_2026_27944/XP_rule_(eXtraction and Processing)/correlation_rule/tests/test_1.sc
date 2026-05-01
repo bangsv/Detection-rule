@@ -1,0 +1,3 @@
+{"action":"request","category.generic":"Application","category.low":"detection","datafield1":"GIN","datafield2":"2026-03-22T19:49:05.901","event_src.category":"Web server","event_src.title":"nginx_ui","event_src.vendor":"nginx","id":"CVE-2026-27944","importance":"info","msgid":"200","object":"application","object.process.path":"/%61%70%69/%62%61%63%6b%75%70","src.ip":"172.22.0.1","status":"failure","subject":"account","time":"2026-03-22T19:49:05.901Z"}
+
+expect 1 {}

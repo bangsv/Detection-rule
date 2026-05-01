@@ -1,0 +1,1 @@
+alert http any any -> any any ( msg:"CVE-2026-27944 backup access"; flow:to_server,established; http.method; content:"GET"; nocase; http.uri; pcre:"/\/(api|%61%70%69)(\.\/|\/)(backup|%62%61%63%6b%75%70)/Ui"; classtype:web-application-attack; metadata:attack_target web_server, cve CVE-2026-27944, severity High; sid:1000099; rev:1;)

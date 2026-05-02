@@ -1,0 +1,5 @@
+Command for test suricata rule on pcap file
+suricata -r file.pcap -S file.rules -l outpath
+
+
+

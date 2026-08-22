@@ -1,0 +1,50 @@
+dn: CN=ESC2,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=work,DC=local
+changetype: add
+objectClass: top
+objectClass: pKICertificateTemplate
+cn: ESC2
+distinguishedName: 
+ CN=ESC2,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configu
+ ration,DC=work,DC=local
+instanceType: 4
+whenCreated: 20260816200743.0Z
+whenChanged: 20260816201008.0Z
+displayName: ESC2
+uSNCreated: 229546
+uSNChanged: 229552
+showInAdvancedViewOnly: TRUE
+name: ESC2
+objectGUID:: yXpmi5JVV0iQeRKbMWhNng==
+flags: 131642
+revision: 100
+objectCategory: 
+ CN=PKI-Certificate-Template,CN=Schema,CN=Configuration,DC=work,DC=local
+pKIDefaultKeySpec: 1
+pKIKeyUsage:: oAA=
+pKIMaxIssuingDepth: 0
+pKICriticalExtensions: 2.5.29.15
+pKICriticalExtensions: 2.5.29.7
+pKIExpirationPeriod:: AEA5hy7h/v8=
+pKIOverlapPeriod:: AICmCv/e//8=
+pKIExtendedKeyUsage: 1.3.6.1.4.1.311.10.3.4
+pKIExtendedKeyUsage: 1.3.6.1.5.5.7.3.2
+pKIExtendedKeyUsage: 2.5.29.37.0
+pKIExtendedKeyUsage: 1.3.6.1.5.5.7.3.4
+pKIDefaultCSPs: 1,Microsoft Enhanced Cryptographic Provider v1.0
+dSCorePropagationData: 20260816200907.0Z
+dSCorePropagationData: 16010101000000.0Z
+msPKI-RA-Signature: 0
+msPKI-Enrollment-Flag: 41
+msPKI-Private-Key-Flag: 16842768
+msPKI-Certificate-Name-Flag: 33554432
+msPKI-Minimal-Key-Size: 2048
+msPKI-Template-Schema-Version: 2
+msPKI-Template-Minor-Revision: 9
+msPKI-Cert-Template-OID: 
+ 1.3.6.1.4.1.311.21.8.3951452.12351434.2576036.8536473.9398786.172.13869709.159
+ 45696
+msPKI-Certificate-Application-Policy: 1.3.6.1.4.1.311.10.3.4
+msPKI-Certificate-Application-Policy: 1.3.6.1.5.5.7.3.2
+msPKI-Certificate-Application-Policy: 2.5.29.37.0
+msPKI-Certificate-Application-Policy: 1.3.6.1.5.5.7.3.4
+

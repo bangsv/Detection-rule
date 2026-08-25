@@ -1,0 +1,28 @@
+- <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+- <System>
+  <Provider Name="Microsoft-Windows-Security-Auditing" Guid="{54849625-5478-4994-A5BA-3E3B0328C30D}" /> 
+  <EventID>4898</EventID> 
+  <Version>0</Version> 
+  <Level>0</Level> 
+  <Task>12805</Task> 
+  <Opcode>0</Opcode> 
+  <Keywords>0x8020000000000000</Keywords> 
+  <TimeCreated SystemTime="2026-08-25T14:35:29.718892000Z" /> 
+  <EventRecordID>250373</EventRecordID> 
+  <Correlation /> 
+  <Execution ProcessID="568" ThreadID="4648" /> 
+  <Channel>Security</Channel> 
+  <Computer>dc01.work.local</Computer> 
+  <Security /> 
+  </System>
+- <EventData>
+  <Data Name="TemplateInternalName">ESC3_1</Data> 
+  <Data Name="TemplateVersion">101.2</Data> 
+  <Data Name="TemplateSchemaVersion">2</Data> 
+  <Data Name="TemplateOID">1.3.6.1.4.1.311.21.8.3951452.12351434.2576036.8536473.9398786.172.2824294.12831589</Data> 
+  <Data Name="TemplateDSObjectFQDN">CN=ESC3_1,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=work,DC=local</Data> 
+  <Data Name="DCDNSName">dc01.work.local</Data> 
+  <Data Name="TemplateContent">flags = 0x2023a (131642) CT_FLAG_ADD_EMAIL -- 0x2 CT_FLAG_PUBLISH_TO_DS -- 0x8 CT_FLAG_EXPORTABLE_KEY -- 0x10 (16) CT_FLAG_AUTO_ENROLLMENT -- 0x20 (32) CT_FLAG_ADD_TEMPLATE_NAME -- 0x200 (512) CT_FLAG_IS_MODIFIED -- 0x20000 (131072) msPKI-Private-Key-Flag = 0x1010010 (16842768) CTPRIVATEKEY_FLAG_EXPORTABLE_KEY -- 0x10 (16) CTPRIVATEKEY_FLAG_ATTEST_NONE -- 0x0 TEMPLATE_SERVER_VER_2003<<CTPRIVATEKEY_FLAG_SERVERVERSION_SHIFT -- 0x10000 (65536) TEMPLATE_CLIENT_VER_XP<<CTPRIVATEKEY_FLAG_CLIENTVERSION_SHIFT -- 0x1000000 (16777216) msPKI-Certificate-Name-Flag = 0xa6000000 (2785017856) CT_FLAG_SUBJECT_ALT_REQUIRE_UPN -- 0x2000000 (33554432) CT_FLAG_SUBJECT_ALT_REQUIRE_EMAIL -- 0x4000000 (67108864) CT_FLAG_SUBJECT_REQUIRE_EMAIL -- 0x20000000 (536870912) CT_FLAG_SUBJECT_REQUIRE_DIRECTORY_PATH -- 0x80000000 (2147483648) msPKI-Enrollment-Flag = 0x29 (41) CT_FLAG_INCLUDE_SYMMETRIC_ALGORITHMS -- 0x1 CT_FLAG_PUBLISH_TO_DS -- 0x8 CT_FLAG_AUTO_ENROLLMENT -- 0x20 (32) msPKI-Template-Schema-Version = 2 revision = 101 msPKI-Template-Minor-Revision = 2 msPKI-RA-Signature = 0 msPKI-Minimal-Key-Size = 2048 pKIDefaultKeySpec = 1 pKIExpirationPeriod = 1 Годы pKIOverlapPeriod = 6 Недели cn = ESC3_1 distinguishedName = ESC3_1 msPKI-Cert-Template-OID = 1.3.6.1.4.1.311.21.8.3951452.12351434.2576036.8536473.9398786.172.2824294.12831589 pKIKeyUsage = a0 displayName = ESC3_1 templateDescription = пользователь pKIExtendedKeyUsage = 1.3.6.1.4.1.311.10.3.4 Шифрующая файловая система (EFS) 1.3.6.1.5.5.7.3.2 Проверка подлинности клиента 1.3.6.1.5.5.7.3.4 Защищенная электронная почта 1.3.6.1.4.1.311.20.2.1 Агент запроса сертификата pKIDefaultCSPs = Microsoft Enhanced Cryptographic Provider v1.0 msPKI-Supersede-Templates = msPKI-RA-Policies = msPKI-RA-Application-Policies = msPKI-Certificate-Policy = msPKI-Certificate-Application-Policy = 1.3.6.1.4.1.311.10.3.4 Шифрующая файловая система (EFS) 1.3.6.1.5.5.7.3.2 Проверка подлинности клиента 1.3.6.1.5.5.7.3.4 Защищенная электронная почта 1.3.6.1.4.1.311.20.2.1 Агент запроса сертификата pKICriticalExtensions = 2.5.29.15 Использование ключа</Data> 
+  <Data Name="SecurityDescriptor">O:LAG:S-1-5-21-2790878447-3455683389-983535108-519D:PAI(OA;;CR;0e10c968-78fb-11d2-90d4-00c04f79dc55;;S-1-5-21-2790878447-3455683389-983535108-1110)(OA;;CR;a05b8cc2-17bc-4802-a710-e7c15ab866a2;;S-1-5-21-2790878447-3455683389-983535108-1110)(OA;;RPWPCR;0e10c968-78fb-11d2-90d4-00c04f79dc55;;DA)(OA;;RPWPCR;0e10c968-78fb-11d2-90d4-00c04f79dc55;;DU)(OA;;RPWPCR;0e10c968-78fb-11d2-90d4-00c04f79dc55;;S-1-5-21-2790878447-3455683389-983535108-519)(A;;LCRPWPRCWDWO;;;S-1-5-21-2790878447-3455683389-983535108-1110)(A;;CCDCLCSWRPWPDTLOSDRCWDWO;;;DA)(A;;CCDCLCSWRPWPDTLOSDRCWDWO;;;S-1-5-21-2790878447-3455683389-983535108-519)(A;;CCDCLCSWRPWPDTLOSDRCWDWO;;;LA)(A;;LCRPLORC;;;AU) Разрешить WORK\test Заявка Разрешить WORK\test Автозаявка Разрешить WORK\Администраторы домена Заявка Разрешить WORK\Пользователи домена Заявка Разрешить WORK\Администраторы предприятия Заявка Разрешить(0x000e0034) WORK\test Запись Разрешить(0x000f00ff) WORK\Администраторы домена Полный доступ Разрешить(0x000f00ff) WORK\Администраторы предприятия Полный доступ Разрешить(0x000f00ff) WORK\Администратор Полный доступ Разрешить(0x00020094) NT AUTHORITY\Прошедшие проверку Чтение</Data> 
+  </EventData>
+  </Event>

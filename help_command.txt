@@ -42,4 +42,4 @@ expect 1 {"correlation_name": "CVE_2023_38831_WinRar"}
 
 
 
-Filter для Wireshark: not arp and ((host 192.168.0.100 or host 192.168.0.10 or host 192.168.0.30) and not (host 192.168.0.15 or 192.168.45.201)) 
+Filter для Wireshark: not arp and ((host 192.168.0.10 or host 192.168.0.30) and not (host 192.168.0.100 or host 192.168.0.15 or 192.168.45.201)) 

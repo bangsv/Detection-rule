@@ -74,3 +74,8 @@
 | **PetitPotam / NTLM Relay** | [Habr — PetitPotam / NTLM Relay](https://habr.com/ru/companies/ussc/articles/688682/)<br>[Hackndo — NTLM Relay](https://en.hackndo.com/ntlm-relay/)     |
 | **DCSync**                  | [Habr — DCSync](https://habr.com/ru/companies/rvision/articles/709866/)<br>[Habr — DCSync](https://habr.com/ru/companies/rvision/articles/709942/)      |
 | **EternalBlue (MS17-010)**  | [Habr — EternalBlue / MS17-010](https://habr.com/ru/companies/k2tech/articles/892202/)                                                                  |
+
+
+
+**© 2026 Захарчук Юрий Александрович** — Все права защищены.  
+Данный материал подготовлен для внутреннего использования в SOC и образовательных целях.

